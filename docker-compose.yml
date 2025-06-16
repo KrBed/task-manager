@@ -1,0 +1,37 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: symfony_app
+        volumes:
+            - ./task-manager:/var/www/html
+        depends_on:
+            - db
+
+    nginx:
+        image: nginx:stable-alpine
+        container_name: symfony_nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - ./task-manager:/var/www/html
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+        depends_on:
+            - app
+
+    db:
+        image: mysql:8.0
+        container_name: symfony_db
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: symfony
+            MYSQL_USER: symfony
+            MYSQL_PASSWORD: symfony
+        volumes:
+            - db_data:/var/lib/mysql
+        ports:
+            - "3307:3306" # Jeśli port 3306 był zajęty
+
+volumes:
+    db_data:
