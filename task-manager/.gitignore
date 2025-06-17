@@ -17,6 +17,7 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
 .idea/
+*.iml
 *.log
 .DS_Store
 *.swp

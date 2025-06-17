@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{{ 'Task Manager'|trans }}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+    {%  endblock %}
+</head>
+<body>
+
+<!-- Header -->
+<header class="bg-light shadow-sm">
+    <nav class="container navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#">{{ 'Task Manager'|trans }}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item"><a class="nav-link" href="#">{{ 'Lista zadań'|trans }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">{{ 'Nowe zadanie'|trans }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">{{ 'Zaloguj'|trans }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">{{ 'Wyloguj'|trans }}</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<!-- Główna zawartość -->
+<main class="container my-5">
+    {% block main %}
+        <h1>Witamy na naszej stronie!</h1>
+        <p>Tutaj znajduje się główna zawartość Twojej strony. Możesz dodać tutaj sekcje, kolumny, zdjęcia itp.</p>
+    {% endblock %}
+</main>
+
+
+<!-- Stopka -->
+<footer class="bg-dark text-white text-center py-4 mt-auto">
+    <div class="container">
+        <p class="mb-0">&copy; 2025 Moja Strona. Wszelkie prawa zastrzeżone.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
