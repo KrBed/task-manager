@@ -8,8 +8,8 @@ use App\Enum\TaskStatus;
 use App\Form\TaskFormType;
 use App\Repository\TaskRepository;
 use App\Service\TaskService;
+use App\Utils\FormUtils;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TaskController extends AbstractController
 {
     #[Route('/list', name: 'task_list')]
-    public function index( TaskRepository $taskRepository)
+    public function index( TaskRepository $taskRepository): Response
     {
         $tasks = $taskRepository->findAll();
 
@@ -53,10 +53,22 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('task_list');
         }
 
-        $form = $this->createForm(TaskFormType::class, $task,['is_edit' => true]);
+        $form = $this->createForm(TaskFormType::class, $task, [
+            'anti_duplicate_token' => FormUtils::generateAntiDuplicateToken($request),
+            'is_edit' => true
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $tokenMismatch = $form->get('anti_duplicate_token')->getData() !== $request->getSession()->get('form_token');
+
+            if ($tokenMismatch) {
+                $this->addFlash('error', 'Formularz został już przetworzony lub token jest nieprawidłowy.');
+                return $this->redirectToRoute('task_create');
+            }
+
+            $request->getSession()->remove('form_token');
+
             $entityManager->flush();
             $this->addFlash('success', 'Zadanie zaktualizowane.');
             return $this->redirectToRoute('task_show', ['uuid' => $task->getUuid()]);
@@ -75,40 +87,29 @@ class TaskController extends AbstractController
     ): Response {
         $task = new Task();
         $task->setStatus(TaskStatus::PENDING->value);
-        $token = null;
-
-        $session = $request->getSession();
-
-        if (!$session->has('form_token')) {
-            $token = Uuid::uuid4()->toString();
-            $session->set('form_token', $token);
-        } else {
-            $token = $session->get('form_token');
-        }
 
         $form = $this->createForm(TaskFormType::class, $task, [
-            'anti_duplicate_token' => $token,
+            'anti_duplicate_token' => FormUtils::generateAntiDuplicateToken($request),
             'is_edit' => false,
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $submittedToken = $form->get('anti_duplicate_token')->getData();
-            $sessionToken = $session->get('form_token');
+            $tokenMismatch = $form->get('anti_duplicate_token')->getData() !== $request->getSession()->get('form_token');
 
-            if ($submittedToken !== $sessionToken) {
+            if ($tokenMismatch) {
                 $this->addFlash('error', 'Formularz został już przetworzony lub token jest nieprawidłowy.');
                 return $this->redirectToRoute('task_create');
             }
 
-            $session->remove('form_token');
+            $request->getSession()->remove('form_token');
 
             $user = $this->getUser();
             $task->setUser($user);
 
             $entityManager->persist($task);
             $entityManager->flush();
-            $this->addFlash('success', 'Zadanie dodane.');
+            $this->addFlash('success', 'Zadanie zostało dodane.');
 
             return $this->redirectToRoute('task_list');
         }

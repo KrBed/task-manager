@@ -19,6 +19,11 @@ class TaskService
         $this->security = $security;
     }
 
+    /**
+     * Metoda zwraca posortowane zadania użytkownika według statusu.
+     * Zadania są grupowane w tablicy asocjacyjnej, gdzie klucze to statusy z enum TaskStatus.
+     * @return array|array[]
+     */
     public function getSortedTasks(): array
     {
         $user = $this->security->getUser();
