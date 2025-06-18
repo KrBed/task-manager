@@ -7,3 +7,6 @@
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/sass/main.scss';
+import Sortable from 'sortablejs';
+
+window.Sortable = Sortable;// task-manager/assets/app.js

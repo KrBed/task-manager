@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1 class="mb-3 font-weight-normal text-center">Moje zadania</h1>
+    <div class="d-flex">
+        {% for statusKey, taskList in tasks %}
+            <div class="swimline bg-light p-3 me-3" id="{{ statusKey }}">
+                <h3>{{ ('status.' ~ statusKey)|trans }}</h3>
+                {% for task in taskList %}
+                    <div class="task card mb-2" data-id="{{ task.uuid }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ task.title }}</h5>
+                            <p class="card-text">{{ task.description }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const swimlines = document.querySelectorAll('.swimline');
+
+            swimlines.forEach(swimline => {
+                new Sortable(swimline, {
+                    group: 'tasks',
+                    animation: 150,
+                    onEnd: async (event) => {
+                        const taskId = event.item.dataset.id;
+                        const newStatus = event.to.id;
+                        console.log(`Task ${taskId} moved to ${newStatus}`);
+
+                        try {
+                            const response = await fetch(`/task/update-status/${taskId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ status: newStatus }),
+                            });
+
+                            if (!response.ok) {
+                                console.error('Failed to update task status');
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+                    },
+                });
+            });
+        });
+    </script>
+{%  endblock %}

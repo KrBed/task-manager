@@ -1,0 +1,22 @@
+<a href="{{ path('task_show', {'uuid': task.uuid}) }}" class="card__item text-decoration-none text-dark">
+    <div class="border rounded p-3 mb-3 card__item">
+        <h5 class="mb-1">{{ task.title }}
+            <span class="badge
+                            {% if task.status == 'pending' %} bg-warning
+                            {% elseif task.status == 'completed' %} bg-success
+                            {% elseif task.status == 'rejected' %} bg-danger
+                            {% else %} bg-secondary {% endif %}
+                         ">
+                        {{ task.status|capitalize }}
+                        </span>
+        </h5>
+
+        <div class="text-muted mt-2" style="font-size: 0.9em;">
+            {% if task.deadline %}
+                {{ 'Termin zakończenia'|trans }}: {{ task.deadline|date('Y-m-d') }}
+            {% else %}
+                {{ 'brak terminu'|trans }}
+            {% endif %}
+        </div>
+    </div>
+</a>

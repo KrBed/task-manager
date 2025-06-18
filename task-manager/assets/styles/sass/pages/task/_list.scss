@@ -1,0 +1,7 @@
+.card {
+    &__item {
+        &:hover {
+            background: #f2f2f2 !important; // Kolor tła na hover z wymuszeniem
+        }
+    }
+}

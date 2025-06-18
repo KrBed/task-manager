@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 50vh;">
+        <div class="card shadow-sm w-50">
+            <div class="card-body">
+                <h1 class="h3 mb-3 font-weight-normal text-center">{{ 'Szczegóły zadania'|trans }}</h1>
+                <div class="mb-3">
+                    <h5 class="card-title border-bottom border-dark-subtle pb-2">{{ task.title }}</h5>
+                </div>
+                <div class="mb-3">
+                    <p class="card-text"><strong>{{ 'Opis:'|trans }}</strong> {{ task.description }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="card-text">
+                        <strong>{{ 'Termin zakończenia:'|trans }}</strong>
+                        {% if task.deadline %}
+                            {{ task.deadline|date('Y-m-d') }}
+                        {% else %}
+                            {{ 'brak terminu'|trans }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="text-end mt-4">
+                    <a href="{{ path('task_edit', {'uuid': task.uuid}) }}" class="btn btn-primary">
+                        {{ 'Edytuj'|trans }}
+                    </a>
+                </div>
+            </div>
+            {% if task.subtasks|length > 0 %}
+            <div class="card-body">
+                <h1 class="h3 mb-3 font-weight-normal text-center">{{ 'Podzadania'|trans }}</h1>
+                {% for task in task.subtasks %}
+                    {% include 'task/task_list.html.twig' with {
+                        'task': task,
+                    } %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

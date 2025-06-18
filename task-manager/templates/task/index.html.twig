@@ -1,4 +1,16 @@
 {% extends 'base.html.twig' %}
-{% block main %}
-    <h1>Test task</h1>
+{% block body %}
+    <div class="card">
+        <h5 class="card-header">{{ 'Lista zadań'|trans }}</h5>
+        <div class="mb-3">
+            <div class="card-body">
+                {% for task in tasks %}
+                {% include 'task/task_list.html.twig' with {
+                    'task': task,
+                } %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

@@ -31,7 +31,7 @@ services:
         volumes:
             - db_data:/var/lib/mysql
         ports:
-            - "3307:3306" # Jeśli port 3306 był zajęty
+            - "3333:3306" # Jeśli port 3306 był zajęty
 
 volumes:
     db_data:
